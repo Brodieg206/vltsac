@@ -294,7 +294,7 @@ def disclaimer():
                        text_color="black", font=("Helvetica", 18, "bold"))
     point_5.place(x=20, y=425)
     point_6 = CTkLabel(disclaimer_frame,
-                       text="If you have any concerns or feedback contact us via: brodie.galea@hillcrest.vic.edu.au",
+                       text="If you have any concerns or feedback contact us via: vlt@gmail.com",
                        text_color="black", font=("Helvetica", 18, "bold"))
     point_6.place(x=20, y=500)
 
@@ -411,7 +411,7 @@ def button_login_event():
     menu.minsize(1200, 650)
     menu.configure(fg_color="#F3EBF9")
     # Greetings label on menu
-    greetings_text = customtkinter.CTkLabel(menu, text="Good morning, Brodie Galea", width=200, height=100,
+    greetings_text = customtkinter.CTkLabel(menu, text="Good morning, Brodie", width=200, height=100,
                                                 fg_color="#F3EBF9", corner_radius=1, pady=40,
                                                 font=("Tekton pro", 70, "bold"), text_color="#1c2424")
     greetings_text.place(x=50, y=100)
