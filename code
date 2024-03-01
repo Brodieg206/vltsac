@@ -3,7 +3,6 @@ from customtkinter import *
 from PIL import Image
 import random
 from time import strftime
-import mysql.connector
 
 # Declare global variables for entry widgets
 global firstname_entry
@@ -15,31 +14,6 @@ global password_entry
 customtkinter.set_appearance_mode("dark")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
 # Connecting to a database
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root"
-)
-
-cur = conn.cursor(buffered=True)
-
-try:
-    cur.execute("use vlt")
-except:
-    cur.execute("create database vlt")
-    cur.execute("use vlt")
-
-try:
-    cur.execute("describe login")
-except:
-    cur.execute(
-        "CREATE TABLE IF NOT EXISTS login(fname varchar(20), lname varchar(20), username varchar(20), password varchar(20))")
-
-try:
-    cur.execute("describe subjects")
-except:
-    cur.execute(
-        "CREATE TABLE IF NOT EXISTS subjects(username varchar(20), sub_1 varchar(30), sub_2 varchar(30), sub_3 varchar(30), sub_4 varchar(30), sub_5 varchar(30), sub_6 varchar(30))")
 
 
 def submit_sub():
@@ -54,9 +28,6 @@ def submit_sub():
     username = username_entry.get()
     password = password_entry.get()
 
-    login_query = "insert into login(fname, lname, username, password) values (%s, %s, %s, %s)"
-    login_values = (fname, lname, username, password)
-
     # Get the selected values from the CTkOptionMenu widgets
     selected_subject1 = dropdown_subject1.get()
     selected_subject2 = dropdown_subject2.get()
@@ -65,20 +36,9 @@ def submit_sub():
     selected_subject5 = dropdown_subject5.get()
     selected_subject6 = dropdown_subject6.get()
 
-    # Insert the selected subjects into the database
-    subjects_query = "INSERT INTO subjects (username, sub_1, sub_2, sub_3, sub_4, sub_5, sub_6) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    subjects_values = (
-        username_entry.get(), selected_subject1, selected_subject2, selected_subject3, selected_subject4, selected_subject5,
-        selected_subject6)
 
-    try:
-        cur.execute(login_query, login_values)
-        cur.execute(subjects_query, subjects_values)
-        conn.commit()
-        print("Subjects saved successfully!")
-    except Exception as e:
-        print("Error:", e)
-        conn.rollback()
+
+
 
 
 # Function for signing out via tab
@@ -263,7 +223,7 @@ app.minsize(500, 440)
 
 # Logo for login page
 logo_login = customtkinter.CTkImage(
-    dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\vltnew.png"),
+    dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\vltnew.png"),
     size=(150, 150))
 # Binding image to a label, so it can be packed
 output_login = customtkinter.CTkLabel(app, image=logo_login, text="")
@@ -366,11 +326,11 @@ def ss_calculator():
     study_question.place(x=450, y=150)
     # Importing images to display via a label
     bookss_image = customtkinter.CTkImage(
-        dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\bookss.png"), size=(200, 200))
+        dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\bookss.png"), size=(200, 200))
     bookss_imagelabel = customtkinter.CTkLabel(score_frame, image=bookss_image, text="")
     bookss_imagelabel.place(x=900, y=200)
     pen_image = customtkinter.CTkImage(
-        dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\pen.png"), size=(250, 250))
+        dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\pen.png"), size=(250, 250))
     pen_imagelabel = customtkinter.CTkLabel(score_frame, image=pen_image, text="")
     pen_imagelabel.place(x=100, y=200)
     # Defining variables to be used later
@@ -411,23 +371,6 @@ def open_main_menu():
     global menu
     app.withdraw()  # Hide the login window
 
-# Function for getting content inputted into user/pass
-def button_login_event():
-    # get content of both entry widgets
-    entered_username = entry_username.get()
-    entered_password = entry_password.get()
-
-    # Check if the entered username and password match a record in the database
-    cur.execute("SELECT * FROM login WHERE username = %s AND password = %s", (entered_username, entered_password))
-    result = cur.fetchone()
-
-    if result:
-        # Login successful, you can perform further actions here
-        print("Login successful!")
-        open_main_menu  # Add a function to open the main menu here
-    else:
-        # Login failed, show an error message
-        error_label.config(text="Invalid username or password", text_color="red")
 
 # Function for opening the main menu window upon successful login
 def open_main_menu():
@@ -444,13 +387,7 @@ def open_main_menu():
     time_label.place(x=650, y=350)
     time()
 
-def authenticate_user(username, password):
-    cur.execute("SELECT * FROM login WHERE username = %s AND password = %s", (username, password))
-    result = cur.fetchone()
-    if result:
-        return True
-    else:
-        return False
+
 
 # Function for handling the login button click event
 def button_login_event():
@@ -458,10 +395,8 @@ def button_login_event():
     entered_username = entry_username.get()
     entered_password = entry_password.get()
 
-    if authenticate_user(entered_username, entered_password):
-        # Login successful
+    if entered_username == "admin" and entered_password == "password":
         print("Login successful!")
-        button_login_event
     else:
         incorrect_label = customtkinter.CTkLabel(app, text="Incorrect username or password", text_color="red")
         incorrect_label.place(x=157.5, y=248)
@@ -482,7 +417,7 @@ def button_login_event():
     greetings_text.place(x=50, y=100)
      # Importing main menu image
     ss_image = customtkinter.CTkImage(
-        dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\calculator.png"), size=(400, 300))
+        dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\calculator.png"), size=(400, 300))
     ss_imagelabel = customtkinter.CTkLabel(menu, image=ss_image, text="")
     ss_imagelabel.place(x=100, y=320)
      # List for quotes to be rotated
@@ -530,7 +465,7 @@ def button_login_event():
 
         # Importing exit icon image
         exit_image = customtkinter.CTkImage(
-            dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\exit.png"),
+            dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\exit.png"),
             size=(50, 50))
         exit_button = customtkinter.CTkButton(tab, image=exit_image, text="", fg_color='gray', hover_color='gray',
                                               width=10, command=delete)
@@ -5367,7 +5302,7 @@ def button_login_event():
                                                 fg_color="#286cec", font=("Helvetica", 20, "bold"), command=SQ)
             SQ_button.place(x=125, y=180)
             work_image = customtkinter.CTkImage(
-                dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\work.png"),
+                dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\work.png"),
                 size=(300, 250))
             work_label = customtkinter.CTkLabel(resources_frame, image=work_image, text="")
             work_label.place(x=450, y=325)
@@ -5508,20 +5443,20 @@ def button_login_event():
     top_frame.place(x=0, y=0)
     # Topbar configuration
     threeline_topbar = customtkinter.CTkImage(
-        dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\threeline.png"),
+        dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\threeline.png"),
         size=(50, 50))
     output_threelinebutton = customtkinter.CTkButton(top_frame, image=threeline_topbar, text="", fg_color='#246EE9',
                                                      width=1, command=open, hover_color='#246EE9')
     output_threelinebutton.place(x=0, y=0)
 
     topbar_logo = customtkinter.CTkImage(
-        dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\vltnew.png"),
+        dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\vltnew.png"),
         size=(190, 190))
     topbar_logooutput = customtkinter.CTkLabel(top_frame, image=topbar_logo, text="")
     topbar_logooutput.place(x=483, y=-34)
 
     home_button = customtkinter.CTkImage(
-        dark_image=Image.open("C:\\Users\\Brodie Galea\\PyCharmProjects\\website\\home.png"),
+        dark_image=Image.open("C:\\Users\\brodi\\PycharmProjects\\pythonProject\\home.png"),
         size=(80, 80))
     home_button_output = customtkinter.CTkButton(top_frame, image=home_button, text="", fg_color='#246EE9',
                                                  command=home_page_command, hover_color='#246EE9')
